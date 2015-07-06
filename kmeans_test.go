@@ -14,6 +14,13 @@ func TestClustering(t *testing.T) {
 	
 	rand.Seed(time.Now().UTC().UnixNano())
 	for _, test := range kmeansTests {
-		test.Run("../../../../test/actual.csv", "../../../../test/calc.csv")
+		gen, calc, err := test.Run()
+		if err != nil {
+			t.Error(err)
+		}
+
+		// test string output
+		test.ToCSVString(gen)
+		test.ToCSVString(calc)
 	}
 }
