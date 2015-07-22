@@ -8,6 +8,9 @@ import (
 	"strconv"
 )
 
+// In order to create a set of data, the centers of each cluster, the radius
+// of each cluster and the number of points per cluster must be supplied.
+// The data is generated randomly and uniformly within each dimension.
 type Runner struct {
 	Name string
 	Centers []Point
@@ -15,6 +18,7 @@ type Runner struct {
 	ObsPerCluster uint
 }
 
+// Generate creates a set of clusters of random data.
 func (runner Runner) Generate() (data []Point, clusters []Cluster) {
 	numClusters := uint(len(runner.Centers))
 
@@ -33,6 +37,8 @@ func (runner Runner) Generate() (data []Point, clusters []Cluster) {
 	return data, clusters
 }
 
+// Creates the random data and runs the kmeans algorithm on it with the
+// ForgyInitializer.
 func (runner Runner) Run() (generatedClusters []Cluster, calcClusters []Cluster, err error) {
 
 	data, clusters := runner.Generate()
@@ -56,7 +62,10 @@ func (runner Runner) checkError(e error) {
 	}
 }
 
-func (runner Runner) ToCSVString(clusters []Cluster) (s string) {
+// Print out the clusters to a comma delimited string.
+// Each point is on a separate line and contains the group that it is in
+// followed by each coordinate in the point.
+func (runner Runner) ToCSVString(clusters []Cluster) string {
 	var buff bytes.Buffer
 
 	for i := range clusters {
@@ -73,6 +82,8 @@ func (runner Runner) ToCSVString(clusters []Cluster) (s string) {
 	return buff.String()
 }
 
+// Prints out the clusters to a comma delimited file.
+// See ToCSVString for more info.
 func (runner Runner) ToCSVFile(clusters []Cluster, filename string) {
 
 	s := runner.ToCSVString(clusters)
@@ -93,17 +104,19 @@ func (runner Runner) generateCluster(center Point, radius float64) (c Cluster) {
 	return
 }
 
-func (runner Runner) randomPoint(center Point, radius float64) (p Point) {
-	p = make([]float64, len(center))
+// Create a point randomly and uniformly given a center and a radius.
+func (runner Runner) randomPoint(center Point, radius float64) Point {
+	p := make(Point, len(center))
 	for i := range center {
 		r := rand.Float64() * 2 * radius - radius
 		r += center[i]
 		p[i] = r
 	}
 
-	return
+	return p
 }
 
+// Takes the given data and randomly swaps pairs to shuffle them
 func (runner Runner) randomizeData(data []Point) {
 	for range data {
 		// ignoring that i and j may be the same

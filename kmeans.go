@@ -5,12 +5,22 @@ import (
 	"fmt"
 )
 
+// KMeans is a specific implementation of a clustering algorithm.
+// This is just the basic KMeans implementation.
 type KMeans struct {
 	Clusterer
+	// maxLoops tells us when to call it quits if we aren't getting 
+	// convergence.
 	maxLoops  int
+	// tolerance tells us when we can call it close enough as a distance
+	// to call it converged.
 	tolerance float64
 }
 
+// Cluster runs the clustering algorithm for KMeans.
+// Maximum iterations is set to 50 and the tolerance is set to .01
+// Returns the clusters that have been converged upon and optionally
+// an error if covergence didn't happen.
 func (km *KMeans) Cluster(
 	data []Point, numberOfClusters uint,
 	initializer ClusterInitializer) ([]Cluster, error) {
@@ -30,12 +40,12 @@ func (km *KMeans) Cluster(
 	for {
 		loopCount += 1
 		if loopCount > km.maxLoops {
-			err = errors.New(fmt.Sprintf("Maximum loops reached before convergence:", loopCount))
+			err = errors.New(fmt.Sprintf("Maximum loops reached before convergence: %v", loopCount))
 			return km.clusters, err
 		}
 
 		if km.recalcCenters() {
-			fmt.Printf("Stopped after %d iterations.", loopCount)
+			fmt.Printf("Stopped after %v iterations.", loopCount)
 			return km.clusters, nil
 		}
 
@@ -63,6 +73,8 @@ func (km *KMeans) recalcCenters() bool {
 	}
 }
 
+// assign takes each data point and assigns it to the cluster
+// whose center is closest to it.
 func (km *KMeans) assign() {
 	for _, cluster := range km.clusters {
 		cluster.clear()

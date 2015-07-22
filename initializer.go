@@ -4,7 +4,7 @@ import "math/rand"
 import "time"
 
 // Cluster Initializer is passed into the clusterer converge method to
-//      ensure that the data is set up.
+// ensure that the data is set up.
 type ClusterInitializer interface {
 	initialize(cl *Clusterer)
 }
@@ -12,6 +12,7 @@ type ClusterInitializer interface {
 // Initialization via selecting random points as the means.
 type ForgyInitializer struct{}
 
+// Implementation for the ForgyInitializer
 func (fi ForgyInitializer) initialize(cl *Clusterer) {
 	rand.Seed(time.Now().UTC().UnixNano())
 
